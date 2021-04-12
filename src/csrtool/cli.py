@@ -2,7 +2,7 @@ import argparse
 import time
 from pathlib import Path
 
-import ssl
+from csrtool import csrutils
 from cryptography.hazmat.primitives import serialization
 
 default_path = Path.home() / "csr"
@@ -24,12 +24,12 @@ def gencsr():
     output_dir.mkdir(mode=755, exist_ok=True)
     output_dir.chmod(mode=755)
 
-    key = ssl.generate_private_key()
-    csr = ssl.generate_csr(org=args.org, ou=args.ou, c=args.country,
+    key = csrutils.generate_private_key()
+    csr = csrutils.generate_csr(org=args.org, ou=args.ou, c=args.country,
                             dns_names=args.names, private_key=key)
 
     # name
-    base_name = f'{args.names[0]}-{time.localtime()}'
+    base_name = f'{args.names[0]}-{int(time.time())}'
 
     # write key
     with open(output_dir / f'{base_name}.key', 'wb') as f:
