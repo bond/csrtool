@@ -21,8 +21,8 @@ def gencsr():
 
     # sanity checks
     output_dir = Path(args.path)
-    output_dir.mkdir(mode=755, exist_ok=True)
-    output_dir.chmod(mode=755)
+    output_dir.mkdir(mode=750, exist_ok=True)
+    output_dir.chmod(mode=750)
 
     key = csrutils.generate_private_key()
     csr = csrutils.generate_csr(org=args.org, ou=args.ou, c=args.country,
