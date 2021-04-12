@@ -8,10 +8,18 @@ from cryptography.x509.oid import AttributeOID, NameOID
 # typing hint
 StrArr = List[str]
 
-def generate_private_key(public_exponent=65537, key_size=2048):
+def generate_private_key(key_size=2048, public_exponent=65537) -> rsa.RSAPrivateKey:
+    """
+        public_exponent should be 65537 for almost everyone, only in some cases 3 for legacy reasons,
+        see: https://cryptography.io/en/latest/hazmat/primitives/asymmetric/rsa/#cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey
+        key_size should be at least 2048, but 1024 is the smallest accepted
+    """
+    if key_size < 1024:
+        raise ValueError("key_size must be at least 1024")
+
     return rsa.generate_private_key( public_exponent, key_size )
 
-def generate_csr(org: str, ou: str, c: str, dns_names: StrArr, private_key):
+def generate_csr(org: str, ou: str, c: str, dns_names: StrArr, private_key) -> x509.CertificateSigningRequest:
     """
     Returns CSR-object based on input. Private key is from method `generate_private_key`
     """

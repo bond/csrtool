@@ -2,7 +2,7 @@ import argparse
 import time
 from pathlib import Path
 
-from csrtool import csrutils
+from . import csrutils
 from cryptography.hazmat.primitives import serialization
 
 default_path = Path.home() / "csr"
