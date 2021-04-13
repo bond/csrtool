@@ -19,7 +19,7 @@ def generate_private_key(key_size=2048, public_exponent=65537) -> rsa.RSAPrivate
 
     return rsa.generate_private_key( public_exponent, key_size )
 
-def generate_csr(org: str, ou: str, c: str, dns_names: StrArr, private_key) -> x509.CertificateSigningRequest:
+def generate_csr(org: str, ou: str, c: str, dns_names: StrArr, private_key: rsa.RSAPrivateKey) -> x509.CertificateSigningRequest:
     """
     Returns CSR-object based on input. Private key is from method `generate_private_key`
     """
