@@ -1,3 +1,4 @@
+import sys
 import argparse
 import time
 from pathlib import Path
@@ -17,6 +18,7 @@ def gencsr():
     parser.add_argument('--country', type=str, default='NO', help='Two-letter country-code (default: NO)')
     parser.add_argument('--org', type=str, required=True, help='Organization Name')
     parser.add_argument('-w', metavar='PATH', dest='path', type=str, default=default_path, help=f'Output directory (default: {default_path})')
+    parser.add_argument('-k', metavar='LEN', dest='key_size', type=int, default=4096, help='Length of RSA private key (default: 4096)')
     args = parser.parse_args()
 
     # sanity checks
@@ -24,7 +26,17 @@ def gencsr():
     output_dir.mkdir(mode=0o750, exist_ok=True)
     output_dir.chmod(mode=0o755)
 
-    key = csrutils.generate_private_key()
+    # Sanity check key_size
+    key_size = args.key_size
+
+    # validate key_size    
+    try: 
+        csrutils.validate_key_size(key_size)
+    except ValueError:
+        print(f'Invalid key size, valid sizes are: {", ".join(map(str, csrutils.valid_rsa_key_sizes))}')
+        sys.exit(1)
+
+    key = csrutils.generate_private_key(key_size)
     csr = csrutils.generate_csr(org=args.org, ou=args.ou, c=args.country,
                             dns_names=args.names, private_key=key)
 

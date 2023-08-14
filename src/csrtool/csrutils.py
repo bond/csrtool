@@ -1,4 +1,5 @@
 from typing import List
+import sys
 
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes
@@ -8,7 +9,17 @@ from cryptography.x509.oid import NameOID
 # typing hint
 StrArr = List[str]
 
-def generate_private_key(key_size=2048, public_exponent=65537) -> rsa.RSAPrivateKey:
+valid_rsa_key_sizes = [1024, 2048, 3072, 4096, 8129, 16384]
+
+def validate_key_size(key_size: int):
+    """
+    Checks that the RSA key size is one of the allowed values.
+    """
+    match = valid_rsa_key_sizes.index(key_size)
+    if key_size <= 2048:
+        print("WARNING: 2048bit keysize is the minimum size that should be used, 4096 recommended", file=sys.stderr)
+
+def generate_private_key(key_size=4096, public_exponent=65537) -> rsa.RSAPrivateKey:
     """
         public_exponent should be 65537 for almost everyone, only in some cases 3 for legacy reasons,
         see: https://cryptography.io/en/latest/hazmat/primitives/asymmetric/rsa/#cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey
