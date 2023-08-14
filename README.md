@@ -8,3 +8,8 @@ Can be installed from PyPi: `pip install csrtool`
 First domain is used as Common-name in addition to DNS-name: `csr --org MyOrg my.org www.my-org`
 
 For more help: `csr --help`
+
+## Development
+To test the development version use command in repository dir: `pip install -e $(pwd)`
+
+Pull requests are welcome :) 
