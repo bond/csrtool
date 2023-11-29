@@ -9,6 +9,8 @@ First domain is used as Common-name in addition to DNS-name: `csr --org MyOrg my
 
 For more help: `csr --help`
 
+Alternate IP-addresses are supported from version 0.0.8, by using syntax "ip:10.0.0.1"
+
 ## Development
 To test the development version use command in repository dir: `pip install -e $(pwd)`
 

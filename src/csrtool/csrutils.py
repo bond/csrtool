@@ -1,5 +1,7 @@
 from typing import List
 import sys
+import ipaddress
+import re
 
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes
@@ -10,6 +12,9 @@ from cryptography.x509.oid import NameOID
 StrArr = List[str]
 
 valid_rsa_key_sizes = [1024, 2048, 3072, 4096, 8129, 16384]
+
+# match ips in dns-names
+ip_exp = re.compile('^ip:', re.I)
 
 def validate_key_size(key_size: int):
     """
@@ -34,6 +39,7 @@ def generate_csr(org: str, ou: str, c: str, dns_names: StrArr, private_key: rsa.
     """
     Returns CSR-object based on input. Private key is from method `generate_private_key`
     """
+
     builder = x509.CertificateSigningRequestBuilder()
     builder = builder.subject_name(x509.Name([
         x509.NameAttribute(NameOID.COMMON_NAME, dns_names[0]),
@@ -42,10 +48,14 @@ def generate_csr(org: str, ou: str, c: str, dns_names: StrArr, private_key: rsa.
         x509.NameAttribute(NameOID.COUNTRY_NAME, c)
     ]))
 
+    # split IP-addresses from DNS-names
+    alt_dns_names_without_ip = filter(lambda name: not ip_exp.match(name), dns_names)
+    alt_ips = filter(lambda name: ip_exp.match(name), dns_names)
+
     # add DNSname(s)
     builder = builder.add_extension(
         x509.SubjectAlternativeName(
-            list(map(lambda x: x509.DNSName(x), dns_names))
+            list(map(lambda x: x509.DNSName(x), alt_dns_names_without_ip)) + list(map(lambda x: x509.IPAddress(ipaddress.ip_address(x[3:])), alt_ips))
         ),
         critical=False
     )
